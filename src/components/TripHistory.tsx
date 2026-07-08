@@ -5,9 +5,10 @@ interface Props {
   onSelect: (tripId: string) => void
   onBack: () => void
   loading: boolean
+  onDelete?: (tripId: string) => void
 }
 
-export default function TripHistory({ trips, onSelect, onBack, loading }: Props) {
+export default function TripHistory({ trips, onSelect, onBack, loading, onDelete }: Props) {
   return (
     <div className="mt-6 animate-fade-in">
       <div className="flex items-center justify-between mb-5">
@@ -50,9 +51,20 @@ export default function TripHistory({ trips, onSelect, onBack, loading }: Props)
                     {trip.memberCount}명 · {new Date(trip.createdAt).toLocaleDateString('ko-KR')}
                   </p>
                 </div>
-                <span className="text-xs text-emerald-600 shrink-0 mt-0.5">
-                  {trip.hasResult ? '✅ 완료' : '⏳ 미완료'}
-                </span>
+                <div className="flex items-center gap-2 shrink-0 mt-0.5">
+                  <span className="text-xs text-emerald-600">
+                    {trip.hasResult ? '✅ 완료' : '⏳ 미완료'}
+                  </span>
+                  {onDelete && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); onDelete(trip.tripId) }}
+                      className="text-xs text-red-400 hover:text-red-600 transition-colors"
+                    >
+                      삭제
+                    </button>
+                  )}
+                </div>
               </div>
             </button>
           ))}

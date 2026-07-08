@@ -160,6 +160,11 @@ export async function getTripHistory(): Promise<TripHistoryItem[]> {
   return apiFetch('/api/trip/history')
 }
 
+// F-09: DELETE /api/trip/:id
+export async function deleteTrip(tripId: string): Promise<void> {
+  await apiFetch(`/api/trip/${tripId}`, { method: 'DELETE' })
+}
+
 // External: GET /api/geo?q= — 도시 → 좌표 (미등록 시 null)
 export async function getGeo(city: string): Promise<{ lat: number | null; lon: number | null }> {
   return apiFetch(`/api/geo?q=${encodeURIComponent(city)}`)

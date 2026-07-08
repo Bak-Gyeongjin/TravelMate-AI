@@ -176,4 +176,15 @@ router.put('/:id/family', (req, res) => {
   res.json({ success: true })
 })
 
+// DELETE /api/trip/:id - 여행 삭제
+router.delete('/:id', (req, res) => {
+  const userId = req.user?.userId || '__none__'
+  const db = getDb()
+  const trip = db.prepare('SELECT trip_id FROM Trip WHERE trip_id = ? AND user_id = ?').get(req.params.id, userId)
+  if (!trip) return res.status(404).json({ error: '여행 정보를 찾을 수 없거나 삭제 권한이 없습니다.' })
+
+  db.prepare('DELETE FROM Trip WHERE trip_id = ?').run(req.params.id)
+  res.json({ success: true })
+})
+
 export default router

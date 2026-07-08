@@ -11,7 +11,7 @@ import ChecklistSection from './components/ChecklistSection'
 import MedicineMemo from './components/MedicineMemo'
 import ProgressFooter from './components/ProgressFooter'
 import TripHistory from './components/TripHistory'
-import { createTrip, generateChecklist, updateFamily, saveMemo, getTripHistory, getTrip, getGeo, getWeather, getNearby } from './api'
+import { createTrip, generateChecklist, updateFamily, saveMemo, getTripHistory, getTrip, getGeo, getWeather, getNearby, deleteTrip } from './api'
 import type { GenerateResponse, TripResult } from './api'
 
 export interface MedicineNote {
@@ -281,8 +281,7 @@ function App() {
     setLastTravel(null)
   }
 
-  const openHistory = async () => {
-    setStep('history')
+  const refreshHistory = useCallback(async () => {
     setHistoryLoading(true)
     try {
       const trips = await getTripHistory()
@@ -292,7 +291,22 @@ function App() {
     } finally {
       setHistoryLoading(false)
     }
-  }
+  }, [])
+
+  const openHistory = useCallback(async () => {
+    setStep('history')
+    await refreshHistory()
+  }, [refreshHistory])
+
+  const handleDeleteTrip = useCallback(async (tripId: string) => {
+    if (!confirm('이 여행 기록을 삭제하시겠습니까?')) return
+    try {
+      await deleteTrip(tripId)
+      await refreshHistory()
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '삭제에 실패했습니다.')
+    }
+  }, [refreshHistory])
 
   const loadTrip = async (id: string) => {
     setLoading(true)
@@ -474,7 +488,7 @@ function App() {
 
         {step === 'history' && (
           <div className="max-w-3xl mx-auto">
-            <TripHistory trips={historyTrips} onSelect={loadTrip} onBack={() => setStep('form')} loading={historyLoading} />
+            <TripHistory trips={historyTrips} onSelect={loadTrip} onBack={() => setStep('form')} loading={historyLoading} onDelete={handleDeleteTrip} />
           </div>
         )}
       </div>
