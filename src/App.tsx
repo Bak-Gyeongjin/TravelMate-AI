@@ -1,4 +1,6 @@
 import { useState, useCallback } from 'react'
+import { useAuth } from './AuthContext'
+import LoginPage from './components/LoginPage'
 import Header from './components/Header'
 import FamilyForm, { type Member, type TravelInfo } from './components/FamilyForm'
 import ResultView from './components/ResultView'
@@ -125,6 +127,9 @@ function generateSafetyBriefing(metas: MemberMeta[], travel: TravelInfo, temp: n
 }
 
 function App() {
+  const { user, logout } = useAuth()
+  if (!user) return <LoginPage />
+
   const [step, setStep] = useState<Step>('form')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -378,7 +383,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header onHistoryClick={openHistory} showBadges={step === 'form'} />
+      <Header onHistoryClick={openHistory} showBadges={step === 'form'} username={user.username} onLogout={logout} />
       <div className="mx-auto px-6 pb-12">
         {step === 'form' && (
           <div className="max-w-3xl mx-auto">

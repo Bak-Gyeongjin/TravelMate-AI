@@ -4,5 +4,7 @@ dist/
 *.log
 server/database.sqlite
 server/database.sqlite-journal
+server/database.sqlite-shm
+server/database.sqlite-wal
 .DS_Store
 Thumbs.db

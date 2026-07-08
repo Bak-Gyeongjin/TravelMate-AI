@@ -1,6 +1,8 @@
 interface Props {
   onHistoryClick?: () => void
   showBadges?: boolean
+  username?: string
+  onLogout?: () => void
 }
 
 const FEATURES = [
@@ -12,7 +14,7 @@ const FEATURES = [
   { label: '여행 기록', icon: '💾' },
 ]
 
-export default function Header({ onHistoryClick, showBadges }: Props) {
+export default function Header({ onHistoryClick, showBadges, username, onLogout }: Props) {
   return (
     <header>
       {/* Hero Section */}
@@ -29,10 +31,18 @@ export default function Header({ onHistoryClick, showBadges }: Props) {
               <span className="text-sm font-medium text-white/80">TravelMate AI</span>
             </div>
             <div className="flex items-center gap-2">
+              {username && (
+                <span className="hidden sm:inline text-xs text-white/60 mr-1">{username}</span>
+              )}
               {onHistoryClick && (
                 <button type="button" onClick={onHistoryClick} className="flex items-center gap-1.5 rounded-lg bg-white/10 px-4 py-2 text-sm text-white/80 backdrop-blur-sm hover:bg-white/20 transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                   여행 기록
+                </button>
+              )}
+              {onLogout && (
+                <button type="button" onClick={onLogout} className="flex items-center gap-1 rounded-lg bg-white/10 px-3 py-2 text-xs text-white/70 backdrop-blur-sm hover:bg-white/20 transition-colors">
+                  로그아웃
                 </button>
               )}
             </div>

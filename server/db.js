@@ -19,8 +19,16 @@ export function getDb() {
 
 function initSchema() {
   db.exec(`
+    CREATE TABLE IF NOT EXISTS User (
+      user_id       TEXT PRIMARY KEY,
+      username      TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      created_at    TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
     CREATE TABLE IF NOT EXISTS Trip (
       trip_id       TEXT PRIMARY KEY,
+      user_id       TEXT    REFERENCES User(user_id) ON DELETE CASCADE DEFAULT NULL,
       destination   TEXT    NOT NULL,
       duration      TEXT    NOT NULL,
       travel_month  INTEGER NOT NULL,
@@ -64,6 +72,8 @@ function initSchema() {
   `)
 
   // 마이그레이션: 신규 컬럼 추가
+  try { db.exec(`ALTER TABLE Trip ADD COLUMN user_id TEXT DEFAULT NULL`) } catch {}
   try { db.exec(`ALTER TABLE Trip ADD COLUMN current_temp REAL DEFAULT NULL`) } catch {}
   try { db.exec(`ALTER TABLE Trip ADD COLUMN weather_status TEXT DEFAULT ''`) } catch {}
+  try { db.exec(`CREATE INDEX IF NOT EXISTS idx_trip_user ON Trip(user_id)`) } catch {}
 }

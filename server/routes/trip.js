@@ -23,9 +23,11 @@ router.post('/', (req, res) => {
   const tripId = uuidv4()
   const now = new Date().toISOString()
 
+  const userId = req.user?.userId || null
+
   const insertTrip = db.prepare(
-    `INSERT INTO Trip (trip_id, destination, duration, travel_month, transport, current_temp, weather_status, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO Trip (trip_id, user_id, destination, duration, travel_month, transport, current_temp, weather_status, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
   const insertMember = db.prepare(
     `INSERT INTO FamilyMember (trip_id, relation, age, wheelchair, illness, medication)
@@ -34,7 +36,7 @@ router.post('/', (req, res) => {
 
   let insertedCount = 0
   const txn = db.transaction(() => {
-    insertTrip.run(tripId, destination.trim(), duration, travel_month, transport, req.body.current_temp ?? null, req.body.weather_status ?? '', now)
+    insertTrip.run(tripId, userId, destination.trim(), duration, travel_month, transport, req.body.current_temp ?? null, req.body.weather_status ?? '', now)
 
     for (const m of members) {
       const age = Number(m.age)
@@ -66,14 +68,16 @@ router.post('/', (req, res) => {
 
 // GET /api/trip/history - 여행 이력 조회 (F-08)
 router.get('/history', (req, res) => {
+  const userId = req.user?.userId || '__none__'
   const db = getDb()
   const trips = db.prepare(`
     SELECT t.*,
            (SELECT COUNT(*) FROM FamilyMember WHERE trip_id = t.trip_id) AS member_count,
            (SELECT COUNT(*) FROM AI_Result WHERE trip_id = t.trip_id) AS has_result
     FROM Trip t
+    WHERE t.user_id = ?
     ORDER BY t.created_at DESC
-  `).all()
+  `).all(userId)
 
   const full = trips.map((t) => ({
     tripId: t.trip_id,

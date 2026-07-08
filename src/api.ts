@@ -63,14 +63,37 @@ export interface TripHistoryItem {
   hasResult: boolean
 }
 
+function getToken(): string | null {
+  try { return localStorage.getItem('tm_token') } catch { return null }
+}
+
 async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(url, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  })
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  const token = getToken()
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  const res = await fetch(url, { headers, ...options })
+  if (res.status === 401) {
+    localStorage.removeItem('tm_token')
+    window.location.reload()
+  }
   const data = await res.json()
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`)
   return data
+}
+
+export async function authRegister(username: string, password: string): Promise<{ token: string; user: { userId: string; username: string } }> {
+  return apiFetch('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ username, password }),
+  })
+}
+
+export async function authLogin(username: string, password: string): Promise<{ token: string; user: { userId: string; username: string } }> {
+  return apiFetch('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ username, password }),
+  })
 }
 
 function toApiMember(m: Member) {

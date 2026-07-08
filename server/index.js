@@ -1,11 +1,13 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import authRouter from './routes/auth.js'
 import tripRouter from './routes/trip.js'
 import aiRouter from './routes/ai.js'
 import checklistRouter from './routes/checklist.js'
 import memoRouter from './routes/memo.js'
 import externalRouter from './routes/external.js'
+import { authenticate } from './routes/auth.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -13,10 +15,11 @@ const PORT = process.env.PORT || 3001
 app.use(cors())
 app.use(express.json())
 
-app.use('/api/trip', tripRouter)
-app.use('/api/trip', aiRouter)
-app.use('/api/checklist', checklistRouter)
-app.use('/api/memo', memoRouter)
+app.use('/api/auth', authRouter)
+app.use('/api/trip', authenticate, tripRouter)
+app.use('/api/trip', authenticate, aiRouter)
+app.use('/api/checklist', authenticate, checklistRouter)
+app.use('/api/memo', authenticate, memoRouter)
 app.use('/api', externalRouter)
 
 app.get('/api/health', (_req, res) => {
