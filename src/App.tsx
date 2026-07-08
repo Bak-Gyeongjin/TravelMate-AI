@@ -11,6 +11,7 @@ import ChecklistSection from './components/ChecklistSection'
 import MedicineMemo from './components/MedicineMemo'
 import ProgressFooter from './components/ProgressFooter'
 import TripHistory from './components/TripHistory'
+import ChecklistOnlyModal from './components/ChecklistOnlyModal'
 import { createTrip, generateChecklist, updateFamily, saveMemo, getTripHistory, getTrip, getGeo, getWeather, getNearby, deleteTrip } from './api'
 import type { GenerateResponse, TripResult } from './api'
 
@@ -143,6 +144,7 @@ function App() {
   const [historyTrips, setHistoryTrips] = useState<Awaited<ReturnType<typeof getTripHistory>>>([])
   const [historyLoading, setHistoryLoading] = useState(false)
   const [editingFamily, setEditingFamily] = useState(false)
+  const [showChecklistOnly, setShowChecklistOnly] = useState(false)
 
   const [memberMetas, setMemberMetas] = useState<MemberMeta[]>([])
   const [lastMembers, setLastMembers] = useState<Member[]>([])
@@ -415,7 +417,11 @@ function App() {
             ) : enrichedMap && result ? (
               <>
                 {/* Top Actions */}
-                <div className="mb-6 flex items-center justify-end gap-2">
+                <div className="mb-6 flex items-center justify-end gap-2 flex-wrap">
+                  <button type="button" onClick={() => setShowChecklistOnly(true)} className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 underline whitespace-nowrap">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+                    체크리스트만
+                  </button>
                   <button type="button" onClick={() => setEditingFamily(!editingFamily)} className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 underline whitespace-nowrap">
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     {editingFamily ? '편집 취소' : '여행자 수정'}
@@ -481,6 +487,19 @@ function App() {
 
                 {/* FAB */}
                 <ProgressFooter />
+
+                {/* Checklist-Only Modal */}
+                {showChecklistOnly && (
+                  <ChecklistOnlyModal
+                    data={enrichedMap}
+                    checkedItems={checkedSet}
+                    onToggle={handleToggle}
+                    onSave={handleSaveChecklist}
+                    totalItems={totalItems}
+                    checkedCount={checkedCount}
+                    onClose={() => setShowChecklistOnly(false)}
+                  />
+                )}
               </>
             ) : null}
           </div>
