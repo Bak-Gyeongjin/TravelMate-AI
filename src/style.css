@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s ease-out;
+}
+
+/* Stagger animation delays */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+/* Custom gradient */
+.bg-hero-gradient {
+  background: linear-gradient(135deg, #0f3b3e 0%, #064e3b 50%, #065f46 100%);
+}
+
+/* Floating action button */
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
+}
+
+@media print {
+  header,
+  form,
+  .fab,
+  footer button,
+  .space-y-6 > div:last-child {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+  }
+  .min-h-dvh {
+    min-height: auto !important;
+  }
+  .mx-auto {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  .rounded-xl {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    break-inside: avoid;
+  }
+}
